@@ -1,5 +1,5 @@
 {
-"AWSTemplateFormatVersion": "2010-09-09",
+    "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Hosted Zone and ACM Certificate",
     "Parameters": {
         "Environment": {
@@ -14,7 +14,7 @@
         "DomainName": {
             "Description": "The domain name",
             "Type": "String",
-            "Default": "mariomerco.com"
+            "Default": "theprimetech1.com"
         },
         "DeployHostedZone": {
             "Description": "Define whether deploy the hosted zone or not",
@@ -27,7 +27,7 @@
         }
     },
     "Conditions": {
-        "CreateHostedZone": { "Fn::Equals": [{"Ref": "DeployHostedZone"}, "yes"]}
+        "CreateHostedZone": { "Fn::Equals": [{ "Ref": "DeployHostedZone" }, "yes"] }
     },
     "Resources": {
         "HostedZone": {
@@ -38,23 +38,20 @@
                 "HostedZoneConfig": {
                     "Comment": { "Fn::Sub": "Hosted zone supporting the domain ${DomainName} for the ${Environment} environment." }
                 },
-                "HostedZoneTags": [
-                    {
-                        "Key": "Environment",
-                        "Value": { "Ref": "Environment" }
-                    }
-                ]
+                "HostedZoneTags": [{
+                    "Key": "Environment",
+                    "Value": { "Ref": "Environment" }
+                }]
             }
         },
         "Certificate": {
-            "Type" : "AWS::CertificateManager::Certificate",
-            "Properties" : {
-                "DomainName" : { "Fn::Sub": "*.${DomainName}" },
-                "SubjectAlternativeNames" : [ 
-                    { "Fn::Sub" : "${DomainName}" }
+            "Type": "AWS::CertificateManager::Certificate",
+            "Properties": {
+                "DomainName": { "Fn::Sub": "*.${DomainName}" },
+                "SubjectAlternativeNames": [
+                    { "Fn::Sub": "${DomainName}" }
                 ],
-                "Tags" : [ 
-                    {
+                "Tags": [{
                         "Key": "Environment",
                         "Value": { "Ref": "Environment" }
                     },
@@ -63,8 +60,8 @@
                         "Value": { "Ref": "DomainName" }
                     }
                 ],
-                "ValidationMethod" : "DNS"
-            } 
+                "ValidationMethod": "DNS"
+            }
         }
     }
 }

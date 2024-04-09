@@ -5,7 +5,7 @@ Parameters:
   NodeImageId:
     Description: The OpenVPN AMI Id
     Type: AWS::EC2::Image::Id
-    Default: ami-0461dc52a3f299bf7
+    Default: ami-0c6dffe8e2614aed1
 
   NodeVolumeSize:
     Description: The size of the hard drive of the machines (GBs)
@@ -31,7 +31,7 @@ Parameters:
     Type: Number
     Description: Maximum size of Node Group ASG.
     Default: 1
-  
+
   SubnetIDs:
     Type: List<AWS::EC2::Subnet::Id>
     Description: The list of the subnets where the app can be deployed
@@ -57,7 +57,7 @@ Parameters:
     NoEcho: true
 
 
-Resources: 
+Resources:
   NodeSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -125,15 +125,15 @@ Resources:
     Type: AWS::IAM::Policy
     Properties:
       PolicyName: !Join
-        - '-'
-        - - openvpn
-          - role
+      - '-'
+      - - openvpn
+        - role
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
         - Effect: Deny
           Action:
-            - "*"
+          - "*"
           Resource: "*"
       Roles:
       - !Ref NodeRole
@@ -154,12 +154,12 @@ Resources:
       MaxSize: !Ref NodeAutoScalingGroupMaxSize
       VPCZoneIdentifier: !Ref SubnetIDs
       Tags:
-        - Key: Project
-          Value: OpenVPN
-          PropagateAtLaunch: true
-        - Key: Name
-          Value: OpenVPN Server
-          PropagateAtLaunch: true
+      - Key: Project
+        Value: OpenVPN
+        PropagateAtLaunch: true
+      - Key: Name
+        Value: OpenVPN Server
+        PropagateAtLaunch: true
 
   NodeLaunchConfig:
     Type: AWS::AutoScaling::LaunchConfiguration
@@ -173,14 +173,13 @@ Resources:
       BlockDeviceMappings:
       - DeviceName: /dev/xvda
         Ebs:
-          VolumeSize: 
+          VolumeSize:
             Ref: NodeVolumeSize
           VolumeType: gp2
           DeleteOnTermination: true
       UserData:
-        Fn::Base64:
-          !Sub |
-            #!/bin/bash
-            sudo /usr/local/openvpn_as/scripts/sacli --key "vpn.server.routing.private_network.1" --value "${VPCCidr}" ConfigPut
-            sudo /usr/local/openvpn_as/scripts/sacli --user ${VpnInitialUsername} --new_pass ${VpnInitialPassword} SetLocalPassword
-            sudo /usr/local/openvpn_as/scripts/sacli start
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          sudo /usr/local/openvpn_as/scripts/sacli --key "vpn.server.routing.private_network.1" --value "${VPCCidr}" ConfigPut
+          sudo /usr/local/openvpn_as/scripts/sacli --user ${VpnInitialUsername} --new_pass ${VpnInitialPassword} SetLocalPassword
+          sudo /usr/local/openvpn_as/scripts/sacli start
